@@ -11,16 +11,42 @@ class MoviesController < ApplicationController
   end
 
   def index
-    # puts "OrderBy= #{params[:order_by]}"
-    puts "Ratings= #{ params.has_key?(:ratings) && params[:ratings].keys}"
+    puts "Params: Order= #{params[:order_by]} , Ratings= #{params.has_key?(:ratings) && params[:ratings]}"
+    
     @all_ratings = Movie.all_ratings
-    @order_by = params[:order_by]
-      
-    if params.has_key?(:ratings)then 
-      @movies = Movie.where("rating IN (?)", params[:ratings].keys).order(params[:order_by])
-    else  
-      @movies = Movie.order(params[:order_by]).all
+    
+    # Use session variables
+    if params.has_key?(:ratings) then
+      if params[:ratings].is_a?(Hash) then
+        @selected_ratings = params[:ratings].keys
+      else  
+        @selected_ratings = params[:ratings]
+      end
+      puts "using params= #{params}"
+    elsif session[:ratings]
+      @selected_ratings = session[:ratings]
+      puts "using session"
+    else
+      @selected_ratings = @all_ratings
+      puts "using defaults: #{@selected_ratings}"
     end
+    
+    
+    @order_by = params[:order_by] || session[:order_by] || :id
+      
+    puts "Runtime: Order= #{@order_by}, Ratings= #{@selected_ratings}"  
+    @movies = Movie.where("rating IN (?)", @selected_ratings).order(@order_by)
+
+    # Redirect if Params were not complete
+    unless params[:ratings] && params[:order_by] then
+      puts "Redirecting"
+      flash.keep
+      redirect_to movies_path({:ratings => @selected_ratings, :order_by => @order_by})
+    end
+
+    # Set Session Variables
+    session[:ratings] = @selected_ratings
+    session[:order_by] = @order_by
 
   end
 
