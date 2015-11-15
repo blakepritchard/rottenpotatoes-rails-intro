@@ -11,31 +11,15 @@ class MoviesController < ApplicationController
   end
 
   def index
-    puts "Params: SortBy= #{params[:sort_by]} , Ratings= #{params.has_key?(:ratings) && params[:ratings]}"
-    puts "Defaults= #{Movie.default_ratings}"
-    
     @all_ratings = Movie.all_ratings
     
-    # Use session variables
-#    if params.has_key?(:ratings) then
-#      @selected_ratings = params[:ratings]
-#    elsif session[:ratings]
-#      @selected_ratings = session[:ratings]
-#    else
-#      @selected_ratings = Movie.default_ratings
-#    end
-    
-    
     @selected_ratings = params[:ratings] || session[:ratings] || Movie.default_ratings
-    
     @sort_by = params[:sort_by] || session[:sort_by] || :id
       
-    puts "Runtime: SortBy= #{@sort_by}, Ratings= #{@selected_ratings}"  
     @movies = Movie.where("rating IN (?)", @selected_ratings.keys).order(@sort_by)
 
     # Redirect if Params were not complete
     unless params[:ratings] && params[:sort_by] then
-      puts "Redirecting"
       flash.keep
       redirect_to movies_path({:ratings => @selected_ratings, :sort_by => @sort_by})
     end
