@@ -12,9 +12,9 @@
 %table#movies
   %thead
     %tr
-      %th#title_header{class: ['title'==@sort_by && "hilite"]}= link_to 'title', movies_path( {:sort_by => :title}) 
-      %th#rating_header{class: ['rating'==@sort_by && "hilite"]}= link_to 'rating', movies_path( {:sort_by => :rating} )      
-      %th#release_date_header{class: ['release_date'==@sort_by && "hilite"]}= link_to 'release date', movies_path( {:sort_by => :release_date} )
+      %th#title_header{class: ['title'==@sort_by && "hilite"]}= link_to 'title', movies_path( {:sort_by => :title}), id: "title_header"
+      %th#rating_header{class: ['rating'==@sort_by && "hilite"]}= link_to 'rating', movies_path( {:sort_by => :rating}), id: "rating_header"      
+      %th#release_date_header{class: ['release_date'==@sort_by && "hilite"]}= link_to 'release date', movies_path( {:sort_by => :release_date}), id: "release_date_header"
       %th= 'More Info'
   %tbody
     - @movies.each do |movie|
